@@ -1,58 +1,46 @@
-from flask import Flask, render_template, json, request
-from flaskext.mysql import MySQL
-from werkzeug import generate_password_hash, check_password_hash
-
-mysql = MySQL()
+from flask import Flask, render_template, json, request, make_response
 app = Flask(__name__)
-
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'BucketList'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-mysql.init_app(app)
-
 
 @app.route('/')
 def main():
     return render_template('index.html')
 
-@app.route('/showSignUp')
-def showSignUp():
-    return render_template('signup.html')
+@app.route('/test.png')
+def simple():
+    import datetime
+    import StringIO
+    import random
 
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    from matplotlib.dates import DateFormatter
 
-@app.route('/signUp',methods=['POST','GET'])
-def signUp():
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    try:
-        _name = request.form['inputName']
-        _email = request.form['inputEmail']
-        _password = request.form['inputPassword']
+    lista = ['2005', '09/2002', 'A freaking awesome time', 'lorem']
+    a = json.dumps(lista)
+    listb = ['06/2002', '09/2003', 'Some great memories', 'ipsum']
+    listc = ['2003', 'Had very bad luck']
 
-        # validate the received values
-        if _name and _email and _password:
+    fig=Figure()
+    ax=fig.add_subplot(111)
+    x=[]
+    y=[]
+    now=datetime.datetime.now()
+    delta=datetime.timedelta(days=1)
+    for i in range(10):
+        x.append(now)
+        now+=delta
+        y.append(random.randint(0, 1000))
+    ax.plot_date(x, y, '-')
+    ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
+    fig.autofmt_xdate()
+    canvas=FigureCanvas(fig)
+    png_output = StringIO.StringIO()
+    canvas.print_png(png_output)
+    response=make_response(png_output.getvalue())
+    response.headers['Content-Type'] = 'image/png'
+    return render_template(
+        'index.html',**locals())
 
-            # All Good, let's call MySQL
-
-            _hashed_password = generate_password_hash(_password)
-            cursor.callproc('sp_createUser',(_name,_email,_hashed_password))
-            data = cursor.fetchall()
-
-            if len(data) is 0:
-                conn.commit()
-                return json.dumps({'message':'User created successfully !'})
-            else:
-                return json.dumps({'error':str(data[0])})
-        else:
-            return json.dumps({'html':'<span>Enter the required fields</span>'})
-
-    except Exception as e:
-        return json.dumps({'error':str(e)})
-    finally:
-        cursor.close()
-        conn.close()
 
 if __name__ == "__main__":
     app.run(debug = True)

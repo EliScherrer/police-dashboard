@@ -1,3 +1,8 @@
+//make an array of arrays
+
+
+
+
 new Timesheet('timesheet', 2002, 2013, [
   ['2005', '09/2002', 'A freaking awesome time', 'lorem'],
   ['06/2002', '09/2003', 'Some great memories', 'ipsum'],
