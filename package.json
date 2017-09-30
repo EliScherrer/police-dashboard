@@ -1,0 +1,22 @@
+{
+  "name": "police-dashboard",
+  "version": "1.0.0",
+  "description": "the README",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EliScherrer/police-dashboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EliScherrer/police-dashboard/issues"
+  },
+  "homepage": "https://github.com/EliScherrer/police-dashboard#readme",
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
