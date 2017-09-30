@@ -57,6 +57,29 @@ def displayAverages(min_threshold, types):
 		if unit_counts_for_type[unit] >= min_threshold:
 			print "Unit: " + unit + " Avg Duration: " + str(dur) + " Count: " + str(unit_counts_for_type[unit])
 
+def statsByUnit(min_sched, scope):
+	unit_unprod = dict()
+	for unit in unit_org_data:
+		if unit_dispatch_count[unit]["SCHED"] >= min_sched:
+			unit_dur = unit_total_duration[unit]
+			other_count = 0
+			for t in unimportant_types:
+				other_count += unit_dispatch_count[unit][t]
+
+			other_dur = 0
+			for t in unimportant_types:
+				other_dur += unit_total_duration[unit][t]
+
+			unproductive_dur = (unit_dur["SCHED"]) - (unit_dur["OUTSER"] + unit_dur["ARREST"] + 
+				unit_dur["DSP"] + unit_dur["STKDSP"] + unit_dur["TSTOP"] + other_dur)
+
+			unit_unprod[unit] = unproductive_dur / unit_dur["SCHED"]
+
+	unit_unprod_sorted = sorted(unit_unprod.items(), key=operator.itemgetter(1))
+
+	for i in range(0, scope):
+		unit, unprod_perc = unit_unprod_sorted[i]
+
 def statsByOrg():
 	org_stats = dict()
 	for org in org_unit_data:
@@ -137,6 +160,7 @@ empty_type_dict = {'ASSTER': 0, 'XONS': 0, 'ACK': 0, 'DE': 0, 'STKDSP': 0, 'DOS'
 
 data_by_type = dict()
 org_unit_data = dict()
+unit_org_data = dict()
 data_by_unit = dict()
 unit_total_duration = dict()
 unit_dispatch_count = dict()
@@ -175,13 +199,14 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 		putIfAbsent(data_by_unit, unit, [])
 		data_by_unit[unit].append(entry)
 
-		#sort org and unit data
+		# org -> unit data
 		putIfAbsent(org_unit_data, org, set())
 		if not unit in org_unit_data[org]:
 			org_unit_data[org].add(unit)
 
+		# unit -> org data
+		unit_org_data[unit] = org
+
 		#entries by type
 		putIfAbsent(data_by_type, disp_type, [])
 		data_by_type[disp_type].append(entry)
-
-statsByOrg()
