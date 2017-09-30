@@ -10,28 +10,44 @@
 			Timeline.createBandInfo({
 			    eventSource:    eventSource,
 			    date:           "Jun 28 2006 00:00:00 GMT",
-			    width:          "40%",
+			    width:          "35%",
+			    intervalUnit:   Timeline.DateTime.SECOND,
+			    intervalPixels: 100
+			}),
+			Timeline.createBandInfo({
+			    eventSource:    eventSource,
+			    date:           "Jun 28 2006 00:00:00 GMT",
+			    width:          "25%",
+			    intervalUnit:   Timeline.DateTime.MINUTE,
+			    intervalPixels: 200
+			}),
+			Timeline.createBandInfo({
+			    eventSource:    eventSource,
+			    date:           "Jun 28 2006 00:00:00 GMT",
+			    width:          "15%",
 			    intervalUnit:   Timeline.DateTime.HOUR,
-			    intervalPixels: 50
+			    intervalPixels: 300
 			}),
 			Timeline.createBandInfo({
 					eventSource:    eventSource,
 					date:           "Jun 28 2006 00:00:00 GMT",
-					width:          "30%",
+					width:          "15%",
 					intervalUnit:   Timeline.DateTime.DAY,
-					intervalPixels: 100
+					intervalPixels: 400
 			}),
 			Timeline.createBandInfo({
 					eventSource:    eventSource,
 					date:           "Jun 28 2006 00:00:00 GMT",
-					width:          "30%",
+					width:          "10%",
 					intervalUnit:   Timeline.DateTime.MONTH,
-					intervalPixels: 200
+					intervalPixels: 500
 			})
 		];
 		bandInfos[1].syncWith = 0;
 		bandInfos[2].syncWith = 1;
-		bandInfos[2].highlight = true;
+		bandInfos[3].syncWith = 2;
+		bandInfos[4].syncWith = 3;
+		bandInfos[4].highlight = true;
 
 		tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
 		Timeline.loadXML("../static/data/example1.xml", function(xml, url) { eventSource.loadXML(xml, url); });
