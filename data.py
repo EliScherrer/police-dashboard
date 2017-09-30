@@ -3,6 +3,20 @@ from datetime import datetime
 import time
 import operator
 
+def getAvgInfo():
+	print "Enter min threshold and types, all comma delimited"
+	res = raw_input()
+	while(res != "exit"):
+		res_arr = res.split(',')
+		min_threshold = int(res_arr.pop(0))
+
+		print res_arr
+		print min_threshold
+
+		displayAverages(min_threshold, res_arr)
+		print "Enter min threshold and types, all comma delimited"
+		res = raw_input()
+
 def putIfAbsent(dic, key, val):
 	if not key in dic:
 		dic[key] = val
@@ -28,7 +42,7 @@ def displayAverages(min_threshold, types):
 	unit_avg_for_type = dict()
 	for unit in unit_total_duration:
 		for t in types:
-			if t in unit_total_duration[unit]:
+			if unit_dispatch_count[unit][t] != 0:
 				putIfAbsent(unit_totals_for_type, unit, 0)
 				putIfAbsent(unit_counts_for_type, unit, 0)
 				unit_totals_for_type[unit] += unit_total_duration[unit][t]
@@ -42,6 +56,84 @@ def displayAverages(min_threshold, types):
 	for unit, dur in unit_avgs_sorted:
 		if unit_counts_for_type[unit] >= min_threshold:
 			print "Unit: " + unit + " Avg Duration: " + str(dur) + " Count: " + str(unit_counts_for_type[unit])
+
+def statsByOrg():
+	org_stats = dict()
+	for org in org_unit_data:
+		org_stats[org] = {'count': {'ARREST': 0, 'DSP': 0, 'STKDSP': 0, 'OUTSER': 0, 'TSTOP': 0, 'SCHED': 0, 'OTHER': 0}, 
+						'duration': {'ARREST': 0, 'DSP': 0, 'STKDSP': 0, 'OUTSER': 0, 'TSTOP': 0, 'SCHED': 0, 'OTHER': 0, 'UNPROD': 0}}
+
+		for unit in org_unit_data[org]:
+			unit_dur = unit_total_duration[unit]
+			other_count = 0
+			for t in unimportant_types:
+				other_count += unit_dispatch_count[unit][t]
+
+			other_dur = 0
+			for t in unimportant_types:
+				other_dur += unit_total_duration[unit][t]
+
+			unproductive_dur = (unit_dur["SCHED"]) - (unit_dur["OUTSER"] + unit_dur["ARREST"] + 
+				unit_dur["DSP"] + unit_dur["STKDSP"] + unit_dur["TSTOP"] + other_dur)
+
+			org_stats[org]['count']['SCHED'] += unit_dispatch_count[unit]["SCHED"]
+			org_stats[org]['count']['ARREST'] += unit_dispatch_count[unit]["ARREST"]
+			org_stats[org]['count']['DSP'] += unit_dispatch_count[unit]["DSP"]
+			org_stats[org]['count']['STKDSP'] += unit_dispatch_count[unit]["STKDSP"]
+			org_stats[org]['count']['OUTSER'] += unit_dispatch_count[unit]["OUTSER"]
+			org_stats[org]['count']['TSTOP'] += unit_dispatch_count[unit]["TSTOP"]
+			org_stats[org]['count']['OTHER'] += other_count
+
+			org_stats[org]['duration']['SCHED'] += unit_total_duration[unit]["SCHED"]
+			org_stats[org]['duration']['ARREST'] += unit_total_duration[unit]["ARREST"]
+			org_stats[org]['duration']['DSP'] += unit_total_duration[unit]["DSP"]
+			org_stats[org]['duration']['STKDSP'] += unit_total_duration[unit]["STKDSP"]
+			org_stats[org]['duration']['OUTSER'] += unit_total_duration[unit]["OUTSER"]
+			org_stats[org]['duration']['TSTOP'] += unit_total_duration[unit]["TSTOP"]
+			org_stats[org]['duration']['OTHER'] += other_dur
+			org_stats[org]['duration']['UNPROD'] += unproductive_dur
+
+	org_keys = dict()
+	for org in org_unit_data:
+		org_keys[org] = org_stats[org]['duration']['UNPROD'] / org_stats[org]['duration']['SCHED']
+
+	org_keys_sorted = sorted(org_keys.items(), key=operator.itemgetter(1))
+
+	rank = 1
+	for org, unprod_perc in org_keys_sorted:
+		outser_perc = org_stats[org]['duration']['OUTSER'] / org_stats[org]['duration']['SCHED']
+		arrest_perc = org_stats[org]['duration']['ARREST'] / org_stats[org]['duration']['SCHED']
+		dsp_perc = org_stats[org]['duration']['DSP'] / org_stats[org]['duration']['SCHED']
+		stkdsp_perc = org_stats[org]['duration']['STKDSP'] / org_stats[org]['duration']['SCHED']
+		tstop_perc = org_stats[org]['duration']['TSTOP'] / org_stats[org]['duration']['SCHED']
+		other_perc = org_stats[org]['duration']['OTHER'] / org_stats[org]['duration']['SCHED']
+
+		print("Rank " + str(rank) + ".  ORG: " + org)
+		print("Counts - SCHED: " + str(org_stats[org]['count']['SCHED']) + " ARREST: " + str(org_stats[org]['count']['ARREST']) + " DSP: " + str(org_stats[org]['count']['DSP'])
+			+ " STKDSP: " + str(org_stats[org]['count']['STKDSP']) + " OUTSER: " + str(org_stats[org]['count']['OUTSER']) + " TSTOP: " + str(org_stats[org]['count']['TSTOP'])
+			+ " OTHER: " + str(org_stats[org]['count']['OTHER']))
+		print("Durations - SCHED: " + str(org_stats[org]['duration']['SCHED']) + " ARREST: " + str(org_stats[org]['duration']['ARREST']) + " DSP: " + str(org_stats[org]['duration']['DSP'])
+			+ " STKDSP: " + str(org_stats[org]['duration']['STKDSP']) + " OUTSER: " + str(org_stats[org]['duration']['OUTSER']) + " TSTOP: " + str(org_stats[org]['duration']['TSTOP'])
+			+ " OTHER: " + str(org_stats[org]['duration']['OTHER']))
+		print("Unproductive time: " + str(org_stats[org]['duration']['UNPROD'] ))
+		print("Percentages - UNPROD: " + str(unprod_perc) + " OUTSER: " + str(outser_perc) + " ARREST: " + str(arrest_perc) + " DSP: " + str(dsp_perc)
+			+ " STKDSP: " + str(stkdsp_perc) + " TSTOP: " + str(tstop_perc) + " OTHER: " + str(other_perc))
+		print("")
+		rank += 1
+
+
+
+#all code types -> ['ASSTER', 'XONS', 'ACK', 'DE', 'STKDSP', 'DOS', 'TSTOP', 'SCHED', 'XENR', 'AUTPRE', 'TPURS', 
+#    'ASSTOS', 'PREMP', 'UNITINFO', 'OUTSER', 'SSTOP', 'CLEAR', 'MISC', 'DSP', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
+#    'REMINQ', 'ARREST', 'HOTE', 'ASST']
+
+unimportant_types = ['ASSTER', 'XONS', 'ACK', 'DE', 'DOS', 'XENR', 'AUTPRE', 'TPURS', 
+    'ASSTOS', 'PREMP', 'UNITINFO', 'SSTOP', 'CLEAR', 'MISC', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
+    'REMINQ', 'HOTE', 'ASST']
+
+empty_type_dict = {'ASSTER': 0, 'XONS': 0, 'ACK': 0, 'DE': 0, 'STKDSP': 0, 'DOS': 0, 'TSTOP': 0, 'SCHED': 0, 'XENR': 0, 'AUTPRE': 0, 'TPURS': 0, 
+    'ASSTOS': 0, 'PREMP': 0, 'UNITINFO': 0, 'OUTSER': 0, 'SSTOP': 0, 'CLEAR': 0, 'MISC': 0, 'DSP': 0, 'ENR': 0, 'FPURS': 0, 'HOLD': 0, 'EXCH': 0, 
+    'REMINQ': 0, 'ARREST': 0, 'HOTE': 0, 'ASST': 0}
 
 data_by_type = dict()
 org_unit_data = dict()
@@ -72,13 +164,11 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 		entry['duration'] = dur
 		
 		#count of dispatch calls by unit and type
-		putIfAbsent(unit_dispatch_count, unit, dict())
-		putIfAbsent(unit_dispatch_count[unit], disp_type, 0)
+		putIfAbsent(unit_dispatch_count, unit, empty_type_dict.copy())
 		unit_dispatch_count[unit][disp_type] += 1
 
 		#count of total time spent on calls by unit and type
-		putIfAbsent(unit_total_duration, unit, dict())
-		putIfAbsent(unit_total_duration[unit], disp_type, 0)
+		putIfAbsent(unit_total_duration, unit, empty_type_dict.copy())
 		unit_total_duration[unit][disp_type] += dur
 
 		#entries by unit
@@ -94,7 +184,4 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 		putIfAbsent(data_by_type, disp_type, [])
 		data_by_type[disp_type].append(entry)
 
-displayAverages(100, ["DSP", "STKDSP", "TSTOP"])
-
-
-
+statsByOrg()
