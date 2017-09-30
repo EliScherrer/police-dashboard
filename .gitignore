@@ -2,6 +2,7 @@
 
 #ignore the data file
 *.csv
+events.xml
 
 # dependencies
 /node_modules

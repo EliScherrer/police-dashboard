@@ -10,29 +10,32 @@
 		var bandInfos = [
 			Timeline.createBandInfo({
 			    eventSource:    eventSource,
-			    date:           "Jun 28 2006 00:00:00 GMT",
-			    width:          "40%",
+			    date:           "Jun 1 2017 00:00:00 GMT",
+			    width:          "94%",
 			    intervalUnit:   Timeline.DateTime.MINUTE,
 			    intervalPixels: 200
 			}),
 			Timeline.createBandInfo({
+					overview:       true,
 			    eventSource:    eventSource,
-			    date:           "Jun 28 2006 00:00:00 GMT",
-			    width:          "23%",
+			    date:           "Jun 1 2017 00:00:00 GMT",
+			    width:          "2%",
 			    intervalUnit:   Timeline.DateTime.HOUR,
 			    intervalPixels: 300
 			}),
 			Timeline.createBandInfo({
+					overview:       true,
 					eventSource:    eventSource,
-					date:           "Jun 28 2006 00:00:00 GMT",
-					width:          "22%",
+					date:           "Jun 1 2017 00:00:00 GMT",
+					width:          "2%",
 					intervalUnit:   Timeline.DateTime.DAY,
 					intervalPixels: 400
 			}),
 			Timeline.createBandInfo({
+					overview:       true,
 					eventSource:    eventSource,
-					date:           "Jun 28 2006 00:00:00 GMT",
-					width:          "15%",
+					date:           "Jun 1 2017 00:00:00 GMT",
+					width:          "2%",
 					intervalUnit:   Timeline.DateTime.MONTH,
 					intervalPixels: 500
 			})
@@ -40,12 +43,20 @@
 		bandInfos[1].syncWith = 0;
 		bandInfos[2].syncWith = 1;
 		bandInfos[3].syncWith = 2;
+		bandInfos[1].highlight = true;
+		bandInfos[2].highlight = true;
 		bandInfos[3].highlight = true;
 
-		tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
-		Timeline.loadXML("../static/data/example.xml", function(xml, url) { eventSource.loadXML(xml, url); });
 
-		document.getElementById("timeline-band-0").style.backgroundColor = "red";
+		tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+		Timeline.loadXML("../static/data/events.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+
+
+		//document.getElementById("timeline-band-0").style.backgroundColor = "red";
+		let children = document.getElementById("timeline-band-3").childNodes;
+		let children1 = children[0].childNodes;
+		let children2 = children1[0].childNodes;
+		children2[0].style.backgroundColor = "rgba(170, 170, 170, 0.58)";
 
 	}
 
@@ -68,7 +79,9 @@
   <noscript>
     This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page. Thank you.
   </noscript>
+	<div style="height: 800px; border: 1px solid #aaa"></div>
  {% block body %}{% endblock %}
+
 
 </body>
 </html>
