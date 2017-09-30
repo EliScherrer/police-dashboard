@@ -15,17 +15,12 @@
     </event>
 
 		<!-- event that has no duration-->
-    <event
-        start="month dd yyyy hh:mm:ss GMT"
-        isDuration="false"
-        title="string"
-    >
+    <event start="May 28 2006 09:00:00 GMT" isDuration="false" title="string" >
 		Task: "string"
 		Unit: "string"
 		Event: "string" <!-- this and down change depending on the event/code/decr -->
 		Code: "string"
 		Descr: "string"
-
     </event>
 
 		<!-- example event with duration -->

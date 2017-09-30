@@ -3,6 +3,7 @@
 <head>
   <script src="http://api.simile-widgets.org/timeline/2.3.1/timeline-api.js?bundle=true" type="text/javascript"></script>
 	<!-- <script src="{{ url_for('static', filename='js/timelineSetup.js') }}"></script> -->
+
 	<script>
 	function onLoad() {
 		var eventSource = new Timeline.DefaultEventSource();
@@ -10,35 +11,28 @@
 			Timeline.createBandInfo({
 			    eventSource:    eventSource,
 			    date:           "Jun 28 2006 00:00:00 GMT",
-			    width:          "35%",
-			    intervalUnit:   Timeline.DateTime.SECOND,
-			    intervalPixels: 100
-			}),
-			Timeline.createBandInfo({
-			    eventSource:    eventSource,
-			    date:           "Jun 28 2006 00:00:00 GMT",
-			    width:          "25%",
+			    width:          "40%",
 			    intervalUnit:   Timeline.DateTime.MINUTE,
 			    intervalPixels: 200
 			}),
 			Timeline.createBandInfo({
 			    eventSource:    eventSource,
 			    date:           "Jun 28 2006 00:00:00 GMT",
-			    width:          "15%",
+			    width:          "23%",
 			    intervalUnit:   Timeline.DateTime.HOUR,
 			    intervalPixels: 300
 			}),
 			Timeline.createBandInfo({
 					eventSource:    eventSource,
 					date:           "Jun 28 2006 00:00:00 GMT",
-					width:          "15%",
+					width:          "22%",
 					intervalUnit:   Timeline.DateTime.DAY,
 					intervalPixels: 400
 			}),
 			Timeline.createBandInfo({
 					eventSource:    eventSource,
 					date:           "Jun 28 2006 00:00:00 GMT",
-					width:          "10%",
+					width:          "15%",
 					intervalUnit:   Timeline.DateTime.MONTH,
 					intervalPixels: 500
 			})
@@ -46,11 +40,12 @@
 		bandInfos[1].syncWith = 0;
 		bandInfos[2].syncWith = 1;
 		bandInfos[3].syncWith = 2;
-		bandInfos[4].syncWith = 3;
-		bandInfos[4].highlight = true;
+		bandInfos[3].highlight = true;
 
 		tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
-		Timeline.loadXML("../static/data/example1.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+		Timeline.loadXML("../static/data/example.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+
+		document.getElementById("timeline-band-0").style.backgroundColor = "red";
 
 	}
 
