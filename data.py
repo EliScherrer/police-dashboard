@@ -21,6 +21,11 @@ def putIfAbsent(dic, key, val):
 	if not key in dic:
 		dic[key] = val
 
+def convertToSec(t):
+	fmt = '%d-%b-%y %H:%M:%S'
+	d = datetime.strptime(t, fmt)
+	return time.mktime(d.timetuple())
+
 def calcTimeDuration(start, end):
 	fmt = '%d-%b-%y %H:%M:%S'
 	d1 = datetime.strptime(start, fmt)
@@ -59,6 +64,9 @@ def displayAverages(min_threshold, types):
 
 def statsByUnit(min_sched, scope):
 	unit_unprod = dict()
+	unprod_org = dict()
+	prod_org = dict()
+
 	for unit in unit_stats:
 		if unit_stats[unit]['count']["SCHED"] >= min_sched:
 			other_count = 0
@@ -71,8 +79,10 @@ def statsByUnit(min_sched, scope):
 
 			unproductive_dur = (unit_stats[unit]['duration']["SCHED"]) - (unit_stats[unit]['duration']["OUTSER"] + unit_stats[unit]['duration']["ARREST"] + 
 				unit_stats[unit]['duration']["DSP"] + unit_stats[unit]['duration']["STKDSP"] + unit_stats[unit]['duration']["TSTOP"] + other_dur)
+			unproductive_perc = unproductive_dur / unit_stats[unit]['duration']["SCHED"]
 
-			unit_unprod[unit] = unproductive_dur / unit_stats[unit]['duration']["SCHED"]
+			if unproductive_perc != 1:
+				unit_unprod[unit] = unproductive_perc
 
 	unit_unprod_sorted = sorted(unit_unprod.items(), key=operator.itemgetter(1))
 
@@ -96,6 +106,9 @@ def statsByUnit(min_sched, scope):
 			+ " STKDSP: " + str(stkdsp_perc) + " TSTOP: " + str(tstop_perc))
 		print("")
 
+		putIfAbsent(prod_org, unit_org_data[unit], 0)
+		prod_org[unit_org_data[unit]] += 1
+
 	for i in range(len(unit_unprod_sorted) - scope, len(unit_unprod_sorted)):
 		unit, unprod_perc = unit_unprod_sorted[i]
 
@@ -115,6 +128,25 @@ def statsByUnit(min_sched, scope):
 		print("Percentages - UNPROD: " + str(unprod_perc) + " OUTSER: " + str(outser_perc) + " ARREST: " + str(arrest_perc) + " DSP: " + str(dsp_perc)
 			+ " STKDSP: " + str(stkdsp_perc) + " TSTOP: " + str(tstop_perc))
 		print("")
+
+		putIfAbsent(unprod_org, unit_org_data[unit], 0)
+		unprod_org[unit_org_data[unit]] += 1
+
+	prod_org_sorted = sorted(prod_org.items(), key=operator.itemgetter(1), reverse=True)
+	unprod_org_sorted = sorted(unprod_org.items(), key=operator.itemgetter(1), reverse=True)
+
+	rank = 1
+	print("Org's with top " + str(scope) + " most productive units")
+	for org, count in prod_org_sorted:
+		print(str(rank) + ".  ORG: " + org + "  Count: " + str(count))
+		rank += 1
+
+	rank = 1
+	print("")
+	print("Org's with top " + str(scope) + " most unproductive units")
+	for org, count in unprod_org_sorted:
+		print(str(rank) + ".  ORG: " + org + "  Count: " + str(count))
+		rank += 1
 
 def statsByOrg():
 	org_stats = dict()
@@ -179,7 +211,48 @@ def statsByOrg():
 		print("")
 		rank += 1
 
+def collectStats(row):
+	unit = row[1]
+	org = row[2]
+	start = row[3]
+	end = row[4]
+	disp_type = row[5]
+	code = row[6]
+	descr = row[7]
+	dur = calcTimeDuration(start, end)
 
+	entry = dict()
+	entry['unit'] = unit
+	entry['org'] = org
+	entry['start'] = start
+	entry['end'] = end
+	entry['type'] = disp_type
+	entry['code'] = code
+	entry['description'] = descr
+	entry['duration'] = dur
+
+	#count of dispatch calls by unit and type
+	putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
+	unit_stats[unit]['count'][disp_type] += 1
+
+	#count of total time spent on calls by unit and type
+	unit_stats[unit]['duration'][disp_type] += dur
+
+	#entries by unit
+	putIfAbsent(data_by_unit, unit, [])
+	data_by_unit[unit].append(entry)
+
+	# org -> unit data
+	putIfAbsent(org_unit_stats, org, set())
+	if not unit in org_unit_stats[org]:
+		org_unit_stats[org].add(unit)
+
+	# unit -> org data
+	unit_org_data[unit] = org
+
+	#entries by type
+	putIfAbsent(data_by_type, disp_type, [])
+	data_by_type[disp_type].append(entry)
 
 #all code types -> ['ASSTER', 'XONS', 'ACK', 'DE', 'STKDSP', 'DOS', 'TSTOP', 'SCHED', 'XENR', 'AUTPRE', 'TPURS', 
 #    'ASSTOS', 'PREMP', 'UNITINFO', 'OUTSER', 'SSTOP', 'CLEAR', 'MISC', 'DSP', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
@@ -200,58 +273,18 @@ data_by_unit = dict()
 unit_total_duration = dict()
 unit_dispatch_count = dict()
 unit_stats = dict()
+unit_sched = dict()
 
 with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
 	for row in datareader:
 		unit = row[1]
-		org = row[2]
 		start = row[3]
 		end = row[4]
-		disp_type = row[5]
-		code = row[6]
-		descr = row[7]
-		dur = calcTimeDuration(start, end)
 
-		entry = dict()
-		entry['unit'] = unit
-		entry['org'] = org
-		entry['start'] = start
-		entry['end'] = end
-		entry['type'] = disp_type
-		entry['code'] = code
-		entry['description'] = descr
-		entry['duration'] = dur
-		
-		# #count of dispatch calls by unit and type
-		# putIfAbsent(unit_dispatch_count, unit, empty_type_dict.copy())
-		# unit_dispatch_count[unit][disp_type] += 1
+		unit_sched[unit] = convertToSec(end)
 
-		# #count of total time spent on calls by unit and type
-		# putIfAbsent(unit_total_duration, unit, empty_type_dict.copy())
-		# unit_total_duration[unit][disp_type] += dur
+		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
+			collectStats(row)
 
-		#count of dispatch calls by unit and type
-		putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
-		unit_stats[unit]['count'][disp_type] += 1
-
-		#count of total time spent on calls by unit and type
-		unit_stats[unit]['duration'][disp_type] += dur
-
-		#entries by unit
-		putIfAbsent(data_by_unit, unit, [])
-		data_by_unit[unit].append(entry)
-
-		# org -> unit data
-		putIfAbsent(org_unit_stats, org, set())
-		if not unit in org_unit_stats[org]:
-			org_unit_stats[org].add(unit)
-
-		# unit -> org data
-		unit_org_data[unit] = org
-
-		#entries by type
-		putIfAbsent(data_by_type, disp_type, [])
-		data_by_type[disp_type].append(entry)
-
-statsByUnit(10, 100)
+statsByOrg()
