@@ -52,6 +52,33 @@ function onLoad() {
   bandInfos[1].highlight = true;
 
   tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
-  Timeline.loadJSON("./static/data/example1.json", function(json, url) { eventSource.loadJSON(json, url); });
+	//Timeline.loadJSON("../static/data/example3.json", function(url, json) { eventSource.loadJSON(url, json); });
+	//Timeline.loadJSON("../static/data/example3.json", function(data, url){ eventSource.loadJSON(data, url); });
+	let jsonplz = {
+	  "entries": [
+	      {
+	            "title": "UnicodeBranch",
+	            "description": "Unicode branch of Django",
+	            "start": "April 07 2007 00:15:27 GMT",
+	            "end": "July 04 2007 04:28:29 GMT",
+	            "isDuration": false,
+	            "classname": "w00t"
+	      }
+	  ]
+	}
+	Timeline.loadJSON(jsonplz, function(url, json) { eventSource.loadJSON(url, json); });
+
+	//Timeline.loadXML("../static/data/example1.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+
+}
+
+var resizeTimerID = null;
+function onResize() {
+    if (resizeTimerID == null) {
+        resizeTimerID = window.setTimeout(function() {
+            resizeTimerID = null;
+            tl.layout();
+        }, 500);
+    }
 }
 </script>

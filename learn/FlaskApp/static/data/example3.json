@@ -1,0 +1,12 @@
+{
+  "entries": [
+      {
+            "title": "UnicodeBranch",
+            "description": "Unicode branch of Django",
+            "start": "April 07 2007 00:15:27 GMT",
+            "end": "July 04 2007 04:28:29 GMT",
+            "isDuration": false,
+            "classname": "w00t"
+      }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+	"wiki-url":"http://simile.mit.edu/shelf/",
+	"wiki-section":"Simile JFK Timeline",
+	"dateTimeFormat": "Gregorian",
+	"events": [
+	    {
+	       "start": "May 28 2006 09:00:00 GMT",
+				 "end": "Jun 15 2006 09:00:00 GMT",
+				 "description": "test",
+	       "title": "Writing Timeline documentation",
+	       "durationEvent" :true
+	     }, {
+	       "start": "Jun 16 2006 00:00:00 GMT",
+	       "end": "Jun 26 2006 00:00:00 GMT",
+				 "description":		"test",
+	       "durationEvent" :true,
+	       "title": "Friend's wedding",
+	       "description":"Oswald moves to New Orleans, and finds employment at the William B. Riley Coffee Company"
+	     }]
+}

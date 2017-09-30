@@ -1,0 +1,41 @@
+<data>
+		<!-- event that lasts for time format -->
+    <event
+        start="month dd yyyy hh:mm:ss GMT"
+        end="month dd yyyy hh:mm:ss GMT"
+        isDuration="true"
+        title="string"
+    >
+    Task: "string"
+		Unit: "string"
+		Event: "string" <!-- this and down change depending on the event/code/decr -->
+		Code: "string"
+		Descr: "string"
+
+    </event>
+
+		<!-- event that has no duration-->
+    <event
+        start="month dd yyyy hh:mm:ss GMT"
+        isDuration="false"
+        title="string"
+    >
+		Task: "string"
+		Unit: "string"
+		Event: "string" <!-- this and down change depending on the event/code/decr -->
+		Code: "string"
+		Descr: "string"
+
+    </event>
+
+		<!-- example event with duration -->
+		<event
+        start="May 28 2006 09:00:00 GMT"
+        end="Jun 15 2006 09:00:00 GMT"
+        isDuration="true"
+        title="Writing Timeline documentation"
+    >
+    Description
+    </event>
+
+ </data>
