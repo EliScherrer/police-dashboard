@@ -211,6 +211,27 @@ def statsByOrg():
 		print("")
 		rank += 1
 
+def addToXML(row):
+	unit = row[1]
+	org = row[2]
+	start = row[3]
+	end = row[4]
+	disp_type = row[5]
+	code = row[6]
+	descr = row[7]
+
+	file.write('\t<event\n')
+	file.write('\t\tstart="' + start + '"\n')
+	if disp_type == "ARREST":
+		file.write('\t\tisDuration="false"\n')
+	else:
+		file.write('\t\tend="' + end + '"\n')
+		file.write('\t\tisDuration="false"\n')
+	file.write('\t\ttitle="' + disp_type + ' - ' + code + ' - ' + descr + '"\n')
+	file.write('\t>\n')
+	file.write('\t' + unit + ' - ' + disp_type + ' - ' + code + ' - ' + descr + '\n')
+	file.write('\t</event>\n')
+
 def collectStats(row):
 	unit = row[1]
 	org = row[2]
@@ -275,6 +296,9 @@ unit_dispatch_count = dict()
 unit_stats = dict()
 unit_sched = dict()
 
+file = open("events.xml","w") 
+file.write('<data>\n')
+
 with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
 	for row in datareader:
@@ -286,5 +310,7 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 
 		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
 			collectStats(row)
-
-statsByOrg()
+			addToXML(row)
+			
+	file.write('</data>\n')
+	file.close()
