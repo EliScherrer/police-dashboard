@@ -1,12 +1,13 @@
 import csv
 from datetime import datetime
 import time
+import operator
+
+def putIfAbsent(dic, key, val):
+	if not key in dic:
+		dic[key] = val
 
 def calcTimeDuration(start, end):
-	start.replace("JUN", "Jun")
-	start.replace("JUL", "Jul")
-	start.replace("AUG", "Aug")
-
 	fmt = '%d-%b-%y %H:%M:%S'
 	d1 = datetime.strptime(start, fmt)
 	d2 = datetime.strptime(end, fmt)
@@ -20,54 +21,80 @@ def calcTimeDuration(start, end):
 
 	return diff
 
+def displayAverages(min_threshold, types):
+	print "displaying averages for min threshold " + str(min_threshold) + " with types " + str(types)
+	unit_totals_for_type = dict()
+	unit_counts_for_type = dict()
+	unit_avg_for_type = dict()
+	for unit in unit_total_duration:
+		for t in types:
+			if t in unit_total_duration[unit]:
+				putIfAbsent(unit_totals_for_type, unit, 0)
+				putIfAbsent(unit_counts_for_type, unit, 0)
+				unit_totals_for_type[unit] += unit_total_duration[unit][t]
+				unit_counts_for_type[unit] += unit_dispatch_count[unit][t]
+
+	for unit in unit_totals_for_type:
+		unit_avg_for_type[unit] = unit_totals_for_type[unit] / unit_counts_for_type[unit]
+
+	unit_avgs_sorted = sorted(unit_avg_for_type.items(), key=operator.itemgetter(1))
+
+	for unit, dur in unit_avgs_sorted:
+		if unit_counts_for_type[unit] >= min_threshold:
+			print "Unit: " + unit + " Avg Duration: " + str(dur) + " Count: " + str(unit_counts_for_type[unit])
+
 data_by_type = dict()
 org_unit_data = dict()
 data_by_unit = dict()
-unit_avg_duration = dict()
+unit_total_duration = dict()
 unit_dispatch_count = dict()
 
 with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
-	spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-	for row in spamreader:
+	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
+	for row in datareader:
+		unit = row[1]
+		org = row[2]
+		start = row[3]
+		end = row[4]
+		disp_type = row[5]
+		code = row[6]
+		descr = row[7]
+		dur = calcTimeDuration(start, end)
+
 		entry = dict()
-		entry['unit'] = row[1]
-		entry['org'] = row[2]
-		entry['start'] = row[3]
-		entry['end'] = row[4]
-		entry['type'] = row[5]
-		entry['code'] = row[6]
-		entry['description'] = row[7]
+		entry['unit'] = unit
+		entry['org'] = org
+		entry['start'] = start
+		entry['end'] = end
+		entry['type'] = disp_type
+		entry['code'] = code
+		entry['description'] = descr
+		entry['duration'] = dur
+		
+		#count of dispatch calls by unit and type
+		putIfAbsent(unit_dispatch_count, unit, dict())
+		putIfAbsent(unit_dispatch_count[unit], disp_type, 0)
+		unit_dispatch_count[unit][disp_type] += 1
 
-		if entry['type'] == "SCHED" or entry['type'] == "ARREST":
-			entry['duration'] = None
-		else:
-			entry['duration'] = calcTimeDuration(entry['start'], entry['end'])
+		#count of total time spent on calls by unit and type
+		putIfAbsent(unit_total_duration, unit, dict())
+		putIfAbsent(unit_total_duration[unit], disp_type, 0)
+		unit_total_duration[unit][disp_type] += dur
 
-			if not entry['unit'] in unit_dispatch_count:
-				unit_dispatch_count[entry['unit']] = 0
-			unit_dispatch_count[entry['unit']] += 1
+		#entries by unit
+		putIfAbsent(data_by_unit, unit, [])
+		data_by_unit[unit].append(entry)
 
-			if not entry['unit'] in unit_avg_duration:
-				unit_avg_duration[entry['unit']] = 0
-			unit_avg_duration[entry['unit']] += entry['duration']
+		#sort org and unit data
+		putIfAbsent(org_unit_data, org, set())
+		if not unit in org_unit_data[org]:
+			org_unit_data[org].add(unit)
 
-		if not entry['unit']in data_by_unit:
-			data_by_unit[entry['unit']] = []
-		data_by_unit[entry['unit']].append(entry)
+		#entries by type
+		putIfAbsent(data_by_type, disp_type, [])
+		data_by_type[disp_type].append(entry)
 
-		#sort org data
-		if not entry['org'] in org_unit_data:
-			org_unit_data[entry['org']] = set()
-		if not entry['unit'] in org_unit_data[entry['org']]:
-			org_unit_data[entry['org']].add(entry['unit'])
+displayAverages(100, ["DSP", "STKDSP", "TSTOP"])
 
-		#sort data by type
-		if not entry['type'] in data_by_type:
-			data_by_type[entry['type']] = []
-		data_by_type[entry['type']].append(entry)
 
-		print entry
 
-for unit in unit_avg_duration:
-	unit_avg_duration[unit] = unit_avg_duration[unit]/unit_dispatch_count[unit]
-	print unit + ": " + str(unit_avg_duration[unit]) + " " + str(unit_dispatch_count[unit])
