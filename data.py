@@ -221,12 +221,12 @@ def addToXML(row):
 	descr = row[7]
 
 	file.write('\t<event\n')
-	file.write('\t\tstart="' + start + '"\n')
+	file.write('\t\tstart="' + start + ' GMT"\n')
 	if disp_type == "ARREST":
 		file.write('\t\tisDuration="false"\n')
 	else:
-		file.write('\t\tend="' + end + '"\n')
-		file.write('\t\tisDuration="false"\n')
+		file.write('\t\tend="' + end + ' GMT"\n')
+		file.write('\t\tisDuration="true"\n')
 	file.write('\t\ttitle="' + disp_type + ' - ' + code + ' - ' + descr + '"\n')
 	file.write('\t>\n')
 	file.write('\t' + unit + ' - ' + disp_type + ' - ' + code + ' - ' + descr + '\n')
@@ -298,7 +298,8 @@ unit_sched = dict()
 
 file = open("events.xml","w") 
 file.write('<data>\n')
-
+count = 0
+xml_event_limit = 50
 with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
 	for row in datareader:
@@ -310,7 +311,13 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 
 		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
 			collectStats(row)
-			addToXML(row)
-			
-	file.write('</data>\n')
-	file.close()
+			if count < xml_event_limit:
+				addToXML(row)
+			elif count == xml_event_limit:
+				file.write('</data>\n')
+				file.close()
+
+			count += 1
+
+	# file.write('</data>\n')
+	# file.close()
