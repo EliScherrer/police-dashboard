@@ -294,7 +294,7 @@ data_by_unit = dict()
 unit_total_duration = dict()
 unit_dispatch_count = dict()
 unit_stats = dict()
-#unit_sched = dict()
+unit_sched = dict()
 
 file = open("events.xml","w") 
 file.write('<data>\n')
@@ -306,11 +306,11 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 		start = row[3]
 		end = row[4]
 
-		#unit_sched[unit] = convertToSec(end)
+		unit_sched[unit] = convertToSec(end)
 
-		#if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
-		collectStats(row)
-		addToXML(row)
-
+		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
+			collectStats(row)
+			addToXML(row)
+			
 	file.write('</data>\n')
 	file.close()
