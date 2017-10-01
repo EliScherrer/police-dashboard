@@ -240,7 +240,23 @@ def collectStats(row):
 
 	#add entries to dict with org key
 	putIfAbsent(data_by_org, org, [])
-	data_by_org[org].append([unit, disp_type + " - " + code + " - " + descr, str(convertToSec(start)), str(convertToSec(end))])
+	nice_description = ""
+	if disp_type == 'SCHED':
+		nice_description += "On Duty - "
+	elif disp_type == 'DSP':
+		nice_description += "Dispatch Call - "
+	elif disp_type == 'STKDSP':
+		nice_description += "Low Priority Dispatch - "
+	elif disp_type == 'TSTOP':
+		nice_description += "Traffice Stop - "
+	elif disp_type == 'OUTSER':
+		nice_description += "Out of Service - "
+	elif disp_type == 'ARREST':
+		nice_description += "Arrest - "
+	else:
+		nice_description += disp_type + " - "
+	nice_description += descr
+	data_by_org[org].append([unit, nice_description, str(convertToSec(start)), str(convertToSec(end))])
 
 	#count of dispatch calls by unit and type
 	# putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
