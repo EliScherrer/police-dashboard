@@ -15,11 +15,18 @@
 		'SM', 'SL', 'SC', 'SB', 'SA', 'TA', 'SG', 'TN', 'SE', 'SD']
 
 		for (var i = 0; i < orgs.length; i++) {
-			var item = document.createElement("a");
-			item.href = `/${orgs[i]}`;
-			item.innerHTML = orgs[i];
+			var item = document.createElement("input");
+			item.type = "button";
+			item.value = orgs[i];
+			item.className = "filterBros";
+			item.onclick = function () {
+				console.log(this.value);
+				window.location.href = `http://127.0.0.1:5000/${this.value}`
+			}
+			//item.href = `/${orgs[i]}`;
 			appendHere.appendChild(item);
 		}
+
 
 	}
 
@@ -39,9 +46,9 @@
 
 		dataTable.addColumn({ type: 'string', id: 'unit' });
 		dataTable.addColumn({ type: 'string', id: 'description' });
-		dataTable.addColumn({ type: 'date', id: 'Start' });
-		dataTable.addColumn({ type: 'date', id: 'End' });
-		
+		dataTable.addColumn({ type: 'datetime', id: 'Start' });
+		dataTable.addColumn({ type: 'datetime', id: 'End' });
+
 		dataTable.addRows(data_arr);
 
 		var options = {
@@ -62,9 +69,9 @@
 	   input = document.getElementById("myInput");
 	   filter = input.value.toUpperCase();
 	   div = document.getElementById("myDropdown");
-     a = div.getElementsByTagName("a");
+     a = div.getElementsByClassName("filterBros");
 	   for (i = 0; i < a.length; i++) {
-	   		if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+	   		if (a[i].value.toUpperCase().indexOf(filter) > -1) {
 					a[i].style.display = "";
 	      }
 				else {
@@ -78,7 +85,7 @@
 </head>
 <body onload="onLoad();">
 	<div class="dropdown">
-		<button onclick="dropDownFunc()" class="dropbtn">Dropdown</button>
+		<button onclick="dropDownFunc()" class="dropbtn">Select Organization Unit</button>
 		<div id="myDropdown" class="dropdown-content">
 			<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
 			<div id = "appendHere"></div>
@@ -87,7 +94,7 @@
 	<div id="timelineWrapper">
 		<div id="timeline"></div>
 	</div>
-	<div id= "notTimeline" style="height: 800px;">
+	<div id= "notTimeline">
 
 
 	</div>
