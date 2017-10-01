@@ -149,7 +149,6 @@ def statsByUnit(min_sched, scope):
 		rank += 1
 
 def statsByOrg():
-	org_stats = dict()
 	for org in org_unit_stats:
 		org_stats[org] = {'count': {'ARREST': 0, 'DSP': 0, 'STKDSP': 0, 'OUTSER': 0, 'TSTOP': 0, 'SCHED': 0, 'OTHER': 0}, 
 						'duration': {'ARREST': 0, 'DSP': 0, 'STKDSP': 0, 'OUTSER': 0, 'TSTOP': 0, 'SCHED': 0, 'OTHER': 0, 'UNPROD': 0}}
@@ -211,27 +210,6 @@ def statsByOrg():
 		print("")
 		rank += 1
 
-def addToXML(row):
-	unit = row[1]
-	org = row[2]
-	start = row[3]
-	end = row[4]
-	disp_type = row[5]
-	code = row[6]
-	descr = row[7]
-
-	file.write('\t<event\n')
-	file.write('\t\tstart="' + start + ' GMT"\n')
-	if disp_type == "ARREST":
-		file.write('\t\tisDuration="false"\n')
-	else:
-		file.write('\t\tend="' + end + ' GMT"\n')
-		file.write('\t\tisDuration="true"\n')
-	file.write('\t\ttitle="' + disp_type + ' - ' + code + ' - ' + descr + '"\n')
-	file.write('\t>\n')
-	file.write('\t' + unit + ' - ' + disp_type + ' - ' + code + ' - ' + descr + '\n')
-	file.write('\t</event>\n')
-
 def collectStats(row):
 	unit = row[1]
 	org = row[2]
@@ -283,6 +261,8 @@ unimportant_types = ['ASSTER', 'XONS', 'ACK', 'DE', 'DOS', 'XENR', 'AUTPRE', 'TP
     'ASSTOS', 'PREMP', 'UNITINFO', 'SSTOP', 'CLEAR', 'MISC', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
     'REMINQ', 'HOTE', 'ASST']
 
+important_types = ['ARREST', 'DSP', 'STKDSP', 'TSTOP']
+
 empty_type_dict = {'ASSTER': 0, 'XONS': 0, 'ACK': 0, 'DE': 0, 'STKDSP': 0, 'DOS': 0, 'TSTOP': 0, 'SCHED': 0, 'XENR': 0, 'AUTPRE': 0, 'TPURS': 0, 
     'ASSTOS': 0, 'PREMP': 0, 'UNITINFO': 0, 'OUTSER': 0, 'SSTOP': 0, 'CLEAR': 0, 'MISC': 0, 'DSP': 0, 'ENR': 0, 'FPURS': 0, 'HOLD': 0, 'EXCH': 0, 
     'REMINQ': 0, 'ARREST': 0, 'HOTE': 0, 'ASST': 0}
@@ -295,29 +275,18 @@ unit_total_duration = dict()
 unit_dispatch_count = dict()
 unit_stats = dict()
 unit_sched = dict()
+org_stats = dict()
 
-file = open("events.xml","w") 
-file.write('<data>\n')
-count = 0
-xml_event_limit = 50
 with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
 	for row in datareader:
 		unit = row[1]
 		start = row[3]
 		end = row[4]
+		disp_type = row[5]
+		org = row[2]
 
 		unit_sched[unit] = convertToSec(end)
 
 		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
 			collectStats(row)
-			if count < xml_event_limit:
-				addToXML(row)
-			elif count == xml_event_limit:
-				file.write('</data>\n')
-				file.close()
-
-			count += 1
-
-	# file.write('</data>\n')
-	# file.close()
