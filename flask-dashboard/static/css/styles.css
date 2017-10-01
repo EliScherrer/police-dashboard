@@ -1,11 +1,11 @@
 #timelineWrapper {
-	height: 700px;
+	height: 750px;
 	width: auto;
 	border: 1px solid #aaa;
 }
 
 #timeline {
-	height: inherit;
+	height: 740px;
 	width: 1425px;
 	overflow-x: scroll;
 	overflow-y: scroll;
@@ -14,7 +14,7 @@
 	position:absolute;
   top:0;
   right:0;
-	padding-top: 5px;
+	padding-top: 9px;
 	padding-right: 8px;
 }
 
