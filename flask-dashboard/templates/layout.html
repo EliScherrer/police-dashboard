@@ -20,12 +20,8 @@
 
 	}
 
-	var data1 = "{{data}}";
-	console.log(data1);
-	// for (var i = 0; i < data.length; i++) {
-	// 	data[i][2] = new Date(parseInt(data[i][2]) * 1000);
-	// 	data[i][3] = new Date(parseInt(data[i][3]) * 1000);
-	// }
+	var data_arr = {{data|tojson|safe}};
+	console.log(data_arr[0])
 
 	google.charts.load('current', {'packages':['timeline']});
 	google.charts.setOnLoadCallback(drawChart);
@@ -51,7 +47,7 @@
 		// 	[ 'bosdfb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
 		// 	[ 'basdfob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
 		// ]);
-		dataTable.addRows(data1);
+		dataTable.addRows(data_arr);
 
 		var options = {
 			colors: ['#cbb69d', '#603913', '#c69c6e'],
