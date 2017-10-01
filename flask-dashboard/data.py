@@ -10,17 +10,17 @@ def getTimelineData(org):
 	return data_by_org[org]
 
 def getAvgInfo():
-	print "Enter min threshold and types, all comma delimited"
+	print("Enter min threshold and types, all comma delimited")
 	res = raw_input()
 	while(res != "exit"):
 		res_arr = res.split(',')
 		min_threshold = int(res_arr.pop(0))
 
-		print res_arr
-		print min_threshold
+		print(res_arr)
+		print(min_threshold)
 
 		displayAverages(min_threshold, res_arr)
-		print "Enter min threshold and types, all comma delimited"
+		print("Enter min threshold and types, all comma delimited")
 		res = raw_input()
 
 def putIfAbsent(dic, key, val):
@@ -47,7 +47,7 @@ def calcTimeDuration(start, end):
 	return diff
 
 def displayAverages(min_threshold, types):
-	print "displaying averages for min threshold " + str(min_threshold) + " with types " + str(types)
+	print("displaying averages for min threshold " + str(min_threshold) + " with types " + str(types))
 	unit_totals_for_type = dict()
 	unit_counts_for_type = dict()
 	unit_avg_for_type = dict()
@@ -66,7 +66,7 @@ def displayAverages(min_threshold, types):
 
 	for unit, dur in unit_avgs_sorted:
 		if unit_counts_for_type[unit] >= min_threshold:
-			print "Unit: " + unit + " Avg Duration: " + str(dur) + " Count: " + str(unit_counts_for_type[unit])
+			print("Unit: " + unit + " Avg Duration: " + str(dur) + " Count: " + str(unit_counts_for_type[unit]))
 
 def statsByUnit(min_sched, scope):
 	unit_unprod = dict()
@@ -236,7 +236,7 @@ def collectStats(row):
 	entry['description'] = descr
 	#entry['duration'] = dur
 
-	print row
+	print(row)
 
 	#add entries to dict with org key
 	putIfAbsent(data_by_org, org, [])
@@ -306,7 +306,7 @@ unit_stats = dict()
 unit_sched = dict()
 org_stats = dict()
 
-with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
+with open('cad-events-boilermake-partial.csv', 'rt') as csvfile:
 	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
 	for row in datareader:
 		unit = row[1]
