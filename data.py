@@ -3,6 +3,9 @@ from datetime import datetime
 import time
 import operator
 
+def getTimelineData(org):
+	return data_by_org[org]
+
 def getAvgInfo():
 	print "Enter min threshold and types, all comma delimited"
 	res = raw_input()
@@ -218,7 +221,7 @@ def collectStats(row):
 	disp_type = row[5]
 	code = row[6]
 	descr = row[7]
-	dur = calcTimeDuration(start, end)
+	#dur = calcTimeDuration(start, end)
 
 	entry = dict()
 	entry['unit'] = unit
@@ -228,30 +231,36 @@ def collectStats(row):
 	entry['type'] = disp_type
 	entry['code'] = code
 	entry['description'] = descr
-	entry['duration'] = dur
+	#entry['duration'] = dur
+
+	print row
+
+	#add entries to dict with org key
+	putIfAbsent(data_by_org, org, [])
+	data_by_org[org].append([unit, disp_type + " - " + code + " - " + descr, str(convertToSec(start)), str(convertToSec(end))])
 
 	#count of dispatch calls by unit and type
-	putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
-	unit_stats[unit]['count'][disp_type] += 1
+	# putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
+	# unit_stats[unit]['count'][disp_type] += 1
 
-	#count of total time spent on calls by unit and type
-	unit_stats[unit]['duration'][disp_type] += dur
+	# #count of total time spent on calls by unit and type
+	# unit_stats[unit]['duration'][disp_type] += dur
 
-	#entries by unit
-	putIfAbsent(data_by_unit, unit, [])
-	data_by_unit[unit].append(entry)
+	# #entries by unit
+	# putIfAbsent(data_by_unit, unit, [])
+	# data_by_unit[unit].append(entry)
 
-	# org -> unit data
-	putIfAbsent(org_unit_stats, org, set())
-	if not unit in org_unit_stats[org]:
-		org_unit_stats[org].add(unit)
+	# # org -> unit data
+	# putIfAbsent(org_unit_stats, org, set())
+	# if not unit in org_unit_stats[org]:
+	# 	org_unit_stats[org].add(unit)
 
-	# unit -> org data
-	unit_org_data[unit] = org
+	# # unit -> org data
+	# unit_org_data[unit] = org
 
-	#entries by type
-	putIfAbsent(data_by_type, disp_type, [])
-	data_by_type[disp_type].append(entry)
+	# #entries by type
+	# putIfAbsent(data_by_type, disp_type, [])
+	# data_by_type[disp_type].append(entry)
 
 #all code types -> ['ASSTER', 'XONS', 'ACK', 'DE', 'STKDSP', 'DOS', 'TSTOP', 'SCHED', 'XENR', 'AUTPRE', 'TPURS', 
 #    'ASSTOS', 'PREMP', 'UNITINFO', 'OUTSER', 'SSTOP', 'CLEAR', 'MISC', 'DSP', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
@@ -271,6 +280,7 @@ data_by_type = dict()
 org_unit_stats = dict()
 unit_org_data = dict()
 data_by_unit = dict()
+data_by_org = dict()
 unit_total_duration = dict()
 unit_dispatch_count = dict()
 unit_stats = dict()
@@ -290,3 +300,4 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 
 		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
 			collectStats(row)
+
