@@ -11,9 +11,16 @@
 	overflow-y: scroll;
 }
 
+#titleBoi {
+	padding-right: 20px;
+  padding-top: 20px;
+  float: right;
+}
+
+
 .dropbtn {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #F9B5AC;
+    color: black;
     padding: 16px;
     font-size: 16px;
     border: none;
@@ -21,7 +28,7 @@
 }
 
 .dropbtn:hover, .dropbtn:focus {
-    background-color: #3e8e41;
+    background-color: #F9B5AC;
 }
 #myInput {
     border-box: box-sizing;
