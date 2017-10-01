@@ -86,7 +86,11 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body onload="onLoad();">
-	<label id="titleBoi">Police Dispatch Data</label>
+	<h1><span data-shadow-text="Text-Shadow">Police Dispatch Data</span></h1>
+	<div id="wrapBro">
+		<input type="button" id="viewAnalytics" value="View Analytics" onclick="window.location.href = './../static/data/PoliceDataAnalysisPDF.pdf'"></input>
+	</div>
+	<!-- <label id="titleBoi">Police Dispatch Data</label> -->
 		<div class="dropdown">
 			<button onclick="dropDownFunc()" class="dropbtn">Select Organization Unit</button>
 			<div id="myDropdown" class="dropdown-content">

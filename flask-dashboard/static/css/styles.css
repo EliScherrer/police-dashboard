@@ -6,17 +6,29 @@
 
 #timeline {
 	height: inherit;
-	width: inherit;
+	width: 1425px;
 	overflow-x: scroll;
 	overflow-y: scroll;
 }
-
-#titleBoi {
-	padding-right: 20px;
-  padding-top: 20px;
-  float: right;
+#wrapBro {
+	position:absolute;
+  top:0;
+  right:0;
+	padding-top: 5px;
+	padding-right: 8px;
 }
 
+#viewAnalytics {
+    background-color: #F9B5AC;
+    color: black;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+		float: right;
+		display: inline-block;
+		right: 100px;
+}
 
 .dropbtn {
     background-color: #F9B5AC;
@@ -31,7 +43,6 @@
     background-color: #F9B5AC;
 }
 #myInput {
-    border-box: box-sizing;
     background-image: url('searchicon.png');
     background-position: 14px 12px;
     background-repeat: no-repeat;
@@ -69,3 +80,37 @@
 .dropdown a:hover {background-color: #ddd}
 
 .show {display:block;}
+
+
+
+h1 {
+    font: 600 1em/1 'Raleway', sans-serif, bold;
+    color: rgba(0,0,0,.5);
+    text-transform: uppercase;
+    letter-spacing: .5em;
+		padding-right: 100px;
+	  float: right;
+
+}
+
+span, span:after {
+    font-weight: 900;
+    color: #c9c259;
+    white-space: nowrap;
+    display: inline-block;
+    letter-spacing: .1em;
+}
+
+span {
+    font-size: 40px;
+    z-index: 100;
+    text-shadow: .04em .04em 0 #9cb8b3;
+}
+
+span:after {
+    content: attr(data-shadow-text);
+    color: rgba(0,0,0,.35);
+    text-shadow: none;
+    z-index: -1;
+    -webkit-mask-image: url(https://f.cl.ly/items/1t1C0W3y040g1J172r3h/mask.png);
+}
