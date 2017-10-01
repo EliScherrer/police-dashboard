@@ -1,85 +1,101 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <script src="http://api.simile-widgets.org/timeline/2.3.1/timeline-api.js?bundle=true" type="text/javascript"></script>
-	<!-- <script src="{{ url_for('static', filename='js/timelineSetup.js') }}"></script> -->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 	<script>
+
 	function onLoad() {
-		var eventSource = new Timeline.DefaultEventSource();
-		var bandInfos = [
-			Timeline.createBandInfo({
-			    eventSource:    eventSource,
-			    date:           "Jun 1 2017 00:00:00 GMT",
-			    width:          "94%",
-			    intervalUnit:   Timeline.DateTime.MINUTE,
-			    intervalPixels: 200
-			}),
-			Timeline.createBandInfo({
-					overview:       true,
-			    eventSource:    eventSource,
-			    date:           "Jun 1 2017 00:00:00 GMT",
-			    width:          "2%",
-			    intervalUnit:   Timeline.DateTime.HOUR,
-			    intervalPixels: 300
-			}),
-			Timeline.createBandInfo({
-					overview:       true,
-					eventSource:    eventSource,
-					date:           "Jun 1 2017 00:00:00 GMT",
-					width:          "2%",
-					intervalUnit:   Timeline.DateTime.DAY,
-					intervalPixels: 400
-			}),
-			Timeline.createBandInfo({
-					overview:       true,
-					eventSource:    eventSource,
-					date:           "Jun 1 2017 00:00:00 GMT",
-					width:          "2%",
-					intervalUnit:   Timeline.DateTime.MONTH,
-					intervalPixels: 500
-			})
-		];
-		bandInfos[1].syncWith = 0;
-		bandInfos[2].syncWith = 1;
-		bandInfos[3].syncWith = 2;
-		bandInfos[1].highlight = true;
-		bandInfos[2].highlight = true;
-		bandInfos[3].highlight = true;
 
+		//fill in dropdown
+		var orgs = ['PF', 'TB', 'MP', 'SF', 'MJ', 'TM', 'PR', 'PS', 'PP', 'PQ', 'PV', 'PT', 'PU', 'TE', 'PB', 'PC', 'TL', 'PA',
+		'TJ', 'PG', 'PD', 'TI', 'PJ', 'PK', 'PH', 'PI', 'PN', 'PO', 'PL', 'PM', 'TH', 'PE', 'SJ', 'TF', 'MN', 'TD', 'ME',
+		'MD', 'MG', 'MF', 'MA', 'MC', 'MB', 'MM', 'ML', 'MO', 'TK', 'MI', 'MH', 'MK', 'TC', 'SK', 'TG', 'SI', 'SH', 'SN',
+		'SM', 'SL', 'SC', 'SB', 'SA', 'TA', 'SG', 'TN', 'SE', 'SD']
 
-		tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
-		Timeline.loadXML("../static/data/events.xml", function(xml, url) { eventSource.loadXML(xml, url); });
-
-
-		//document.getElementById("timeline-band-0").style.backgroundColor = "red";
-		let children = document.getElementById("timeline-band-3").childNodes;
-		let children1 = children[0].childNodes;
-		let children2 = children1[0].childNodes;
-		children2[0].style.backgroundColor = "rgba(170, 170, 170, 0.58)";
+		for (var i = 0; i < orgs.length; i++) {
+			orgs[i]
+		}
 
 	}
 
-	var resizeTimerID = null;
-	function onResize() {
-			if (resizeTimerID == null) {
-					resizeTimerID = window.setTimeout(function() {
-							resizeTimerID = null;
-							tl.layout();
-					}, 500);
-			}
+	google.charts.load('current', {'packages':['timeline']});
+	google.charts.setOnLoadCallback(drawChart);
+	function drawChart() {
+		var container = document.getElementById('timeline');
+		var chart = new google.visualization.Timeline(container);
+		var dataTable = new google.visualization.DataTable();
+
+		dataTable.addColumn({ type: 'string', id: 'unit' });
+		dataTable.addColumn({ type: 'string', id: 'description' });
+		dataTable.addColumn({ type: 'date', id: 'Start' });
+		dataTable.addColumn({ type: 'date', id: 'End' });
+		// dataTable.addColumn({ type: 'string', role: 'tooltip' });
+		dataTable.addRows([
+			[ 'pres', 'Washington', new Date(1700, 3, 30), new Date(2017, 2, 4) ],
+			[ 'pres', 'asdfasdfsadf', new Date(1789, 3, 30), new Date(1789, 3, 30) ],
+			[ 'pres', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+			[ 'Jeffsdferson',  'Washington', new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+			[ 'bob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+			[ 'boab', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+			[ 'dbob', 'Washbington', new Date(1655, 3, 30), new Date(1845, 2, 4) ],
+			[ 'boasdb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+			[ 'bosdfb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+			[ 'basdfob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		]);
+
+		var options = {
+			colors: ['#cbb69d', '#603913', '#c69c6e'],
+			width: 3000
+		};
+
+		chart.draw(dataTable, options);
+	}
+
+	/*     scripts for dropdown       */
+	function dropDownFunc() {
+    	document.getElementById("myDropdown").classList.toggle("show");
+		}
+
+	function filterFunction() {
+	   var input, filter, ul, li, a, i;
+	   input = document.getElementById("myInput");
+	   filter = input.value.toUpperCase();
+	   div = document.getElementById("myDropdown");
+     a = div.getElementsByTagName("a");
+	   for (i = 0; i < a.length; i++) {
+	   		if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+					a[i].style.display = "";
+	      }
+				else {
+	        a[i].style.display = "none";
+	      }
+	   }
 	}
 
 	</script>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body onload="onLoad();" onresize="onResize();">
+	<div id="timelineWrapper">
+		<div id="timeline"></div>
+	</div>
+	<div id= "notTimeline" style="height: 800px;">
+		<div class="dropdown">
+			<button onclick="dropDownFunc()" class="dropbtn">Dropdown</button>
+		  <div id="myDropdown" class="dropdown-content">
+		    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+		    <a href="/about">About</a>
+		    <a href="/base">Base</a>
+		    <a href="/blog">Blog</a>
+		    <a href="/contact">Contact</a>
+		    <a href="/custom">Custom</a>
+		    <a href="/support">Support</a>
+		    <a href="/tools">Tools</a>
+		  </div>
+		</div>
 
-  <div id="my-timeline" style="height: 800px; border: 1px solid #aaa"></div>
-  <noscript>
-    This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page. Thank you.
-  </noscript>
-	<div style="height: 800px; border: 1px solid #aaa"></div>
+	</div>
  {% block body %}{% endblock %}
 
 
