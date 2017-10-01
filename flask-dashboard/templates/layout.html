@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+	<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 	<script>
@@ -19,6 +20,13 @@
 
 	}
 
+	var data1 = "{{data}}";
+	console.log(data1);
+	// for (var i = 0; i < data.length; i++) {
+	// 	data[i][2] = new Date(parseInt(data[i][2]) * 1000);
+	// 	data[i][3] = new Date(parseInt(data[i][3]) * 1000);
+	// }
+
 	google.charts.load('current', {'packages':['timeline']});
 	google.charts.setOnLoadCallback(drawChart);
 	function drawChart() {
@@ -31,18 +39,19 @@
 		dataTable.addColumn({ type: 'date', id: 'Start' });
 		dataTable.addColumn({ type: 'date', id: 'End' });
 		// dataTable.addColumn({ type: 'string', role: 'tooltip' });
-		dataTable.addRows([
-			[ 'pres', 'Washington', new Date(1700, 3, 30), new Date(2017, 2, 4) ],
-			[ 'pres', 'asdfasdfsadf', new Date(1789, 3, 30), new Date(1789, 3, 30) ],
-			[ 'pres', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-			[ 'Jeffsdferson',  'Washington', new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
-			[ 'bob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-			[ 'boab', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-			[ 'dbob', 'Washbington', new Date(1655, 3, 30), new Date(1845, 2, 4) ],
-			[ 'boasdb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-			[ 'bosdfb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-			[ 'basdfob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		]);
+		// dataTable.addRows([
+		// 	[ 'pres', 'Washington', new Date(1700, 3, 30), new Date(2017, 2, 4) ],
+		// 	[ 'pres', 'asdfasdfsadf', new Date(1789, 3, 30), new Date(1789, 3, 30) ],
+		// 	[ 'pres', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		// 	[ 'Jeffsdferson',  'Washington', new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+		// 	[ 'bob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		// 	[ 'boab', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		// 	[ 'dbob', 'Washbington', new Date(1655, 3, 30), new Date(1845, 2, 4) ],
+		// 	[ 'boasdb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		// 	[ 'bosdfb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		// 	[ 'basdfob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
+		// ]);
+		dataTable.addRows(data1);
 
 		var options = {
 			colors: ['#cbb69d', '#603913', '#c69c6e'],
@@ -76,7 +85,7 @@
 	</script>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body onload="onLoad();" onresize="onResize();">
+<body>
 	<div id="timelineWrapper">
 		<div id="timeline"></div>
 	</div>
