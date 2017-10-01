@@ -3,6 +3,9 @@ from datetime import datetime
 import time
 import operator
 
+def getTimelineData(org):
+	return data_by_org[org]
+
 def getAvgInfo():
 	print "Enter min threshold and types, all comma delimited"
 	res = raw_input()
@@ -149,7 +152,6 @@ def statsByUnit(min_sched, scope):
 		rank += 1
 
 def statsByOrg():
-	org_stats = dict()
 	for org in org_unit_stats:
 		org_stats[org] = {'count': {'ARREST': 0, 'DSP': 0, 'STKDSP': 0, 'OUTSER': 0, 'TSTOP': 0, 'SCHED': 0, 'OTHER': 0}, 
 						'duration': {'ARREST': 0, 'DSP': 0, 'STKDSP': 0, 'OUTSER': 0, 'TSTOP': 0, 'SCHED': 0, 'OTHER': 0, 'UNPROD': 0}}
@@ -211,27 +213,6 @@ def statsByOrg():
 		print("")
 		rank += 1
 
-def addToXML(row):
-	unit = row[1]
-	org = row[2]
-	start = row[3]
-	end = row[4]
-	disp_type = row[5]
-	code = row[6]
-	descr = row[7]
-
-	file.write('\t<event\n')
-	file.write('\t\tstart="' + start + '"\n')
-	if disp_type == "ARREST":
-		file.write('\t\tisDuration="false"\n')
-	else:
-		file.write('\t\tend="' + end + '"\n')
-		file.write('\t\tisDuration="false"\n')
-	file.write('\t\ttitle="' + disp_type + ' - ' + code + ' - ' + descr + '"\n')
-	file.write('\t>\n')
-	file.write('\t' + unit + ' - ' + disp_type + ' - ' + code + ' - ' + descr + '\n')
-	file.write('\t</event>\n')
-
 def collectStats(row):
 	unit = row[1]
 	org = row[2]
@@ -240,7 +221,7 @@ def collectStats(row):
 	disp_type = row[5]
 	code = row[6]
 	descr = row[7]
-	dur = calcTimeDuration(start, end)
+	#dur = calcTimeDuration(start, end)
 
 	entry = dict()
 	entry['unit'] = unit
@@ -250,30 +231,36 @@ def collectStats(row):
 	entry['type'] = disp_type
 	entry['code'] = code
 	entry['description'] = descr
-	entry['duration'] = dur
+	#entry['duration'] = dur
+
+	print row
+
+	#add entries to dict with org key
+	putIfAbsent(data_by_org, org, [])
+	data_by_org[org].append([unit, disp_type + " - " + code + " - " + descr, str(convertToSec(start)), str(convertToSec(end))])
 
 	#count of dispatch calls by unit and type
-	putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
-	unit_stats[unit]['count'][disp_type] += 1
+	# putIfAbsent(unit_stats, unit, {'count': empty_type_dict.copy(), 'duration': empty_type_dict.copy()})
+	# unit_stats[unit]['count'][disp_type] += 1
 
-	#count of total time spent on calls by unit and type
-	unit_stats[unit]['duration'][disp_type] += dur
+	# #count of total time spent on calls by unit and type
+	# unit_stats[unit]['duration'][disp_type] += dur
 
-	#entries by unit
-	putIfAbsent(data_by_unit, unit, [])
-	data_by_unit[unit].append(entry)
+	# #entries by unit
+	# putIfAbsent(data_by_unit, unit, [])
+	# data_by_unit[unit].append(entry)
 
-	# org -> unit data
-	putIfAbsent(org_unit_stats, org, set())
-	if not unit in org_unit_stats[org]:
-		org_unit_stats[org].add(unit)
+	# # org -> unit data
+	# putIfAbsent(org_unit_stats, org, set())
+	# if not unit in org_unit_stats[org]:
+	# 	org_unit_stats[org].add(unit)
 
-	# unit -> org data
-	unit_org_data[unit] = org
+	# # unit -> org data
+	# unit_org_data[unit] = org
 
-	#entries by type
-	putIfAbsent(data_by_type, disp_type, [])
-	data_by_type[disp_type].append(entry)
+	# #entries by type
+	# putIfAbsent(data_by_type, disp_type, [])
+	# data_by_type[disp_type].append(entry)
 
 #all code types -> ['ASSTER', 'XONS', 'ACK', 'DE', 'STKDSP', 'DOS', 'TSTOP', 'SCHED', 'XENR', 'AUTPRE', 'TPURS', 
 #    'ASSTOS', 'PREMP', 'UNITINFO', 'OUTSER', 'SSTOP', 'CLEAR', 'MISC', 'DSP', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
@@ -283,6 +270,8 @@ unimportant_types = ['ASSTER', 'XONS', 'ACK', 'DE', 'DOS', 'XENR', 'AUTPRE', 'TP
     'ASSTOS', 'PREMP', 'UNITINFO', 'SSTOP', 'CLEAR', 'MISC', 'ENR', 'FPURS', 'HOLD', 'EXCH', 
     'REMINQ', 'HOTE', 'ASST']
 
+important_types = ['ARREST', 'DSP', 'STKDSP', 'TSTOP']
+
 empty_type_dict = {'ASSTER': 0, 'XONS': 0, 'ACK': 0, 'DE': 0, 'STKDSP': 0, 'DOS': 0, 'TSTOP': 0, 'SCHED': 0, 'XENR': 0, 'AUTPRE': 0, 'TPURS': 0, 
     'ASSTOS': 0, 'PREMP': 0, 'UNITINFO': 0, 'OUTSER': 0, 'SSTOP': 0, 'CLEAR': 0, 'MISC': 0, 'DSP': 0, 'ENR': 0, 'FPURS': 0, 'HOLD': 0, 'EXCH': 0, 
     'REMINQ': 0, 'ARREST': 0, 'HOTE': 0, 'ASST': 0}
@@ -291,13 +280,12 @@ data_by_type = dict()
 org_unit_stats = dict()
 unit_org_data = dict()
 data_by_unit = dict()
+data_by_org = dict()
 unit_total_duration = dict()
 unit_dispatch_count = dict()
 unit_stats = dict()
 unit_sched = dict()
-
-file = open("events.xml","w") 
-file.write('<data>\n')
+org_stats = dict()
 
 with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 	datareader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -305,12 +293,11 @@ with open('cad-events-boilermake-partial.csv', 'rb') as csvfile:
 		unit = row[1]
 		start = row[3]
 		end = row[4]
+		disp_type = row[5]
+		org = row[2]
 
 		unit_sched[unit] = convertToSec(end)
 
 		if unit in unit_sched and unit_sched[unit] >= convertToSec(start):
 			collectStats(row)
-			addToXML(row)
-			
-	file.write('</data>\n')
-	file.close()
+
