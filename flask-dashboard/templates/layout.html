@@ -15,13 +15,20 @@
 		'SM', 'SL', 'SC', 'SB', 'SA', 'TA', 'SG', 'TN', 'SE', 'SD']
 
 		for (var i = 0; i < orgs.length; i++) {
-			orgs[i]
+			var item = document.createElement("a");
+			item.href = `/${orgs[i]}`;
+			item.innerHTML = orgs[i];
+			appendHere.appendChild(item);
 		}
 
 	}
 
 	var data_arr = {{data|tojson|safe}};
-	console.log(data_arr[0])
+    for(var i = 0; i < data_arr.length; i++) {
+        data_arr[i][2] = new Date(parseInt(data_arr[i][2]) * 1000)
+        data_arr[i][3] = new Date(parseInt(data_arr[i][3]) * 1000)
+    }
+
 
 	google.charts.load('current', {'packages':['timeline']});
 	google.charts.setOnLoadCallback(drawChart);
@@ -34,19 +41,7 @@
 		dataTable.addColumn({ type: 'string', id: 'description' });
 		dataTable.addColumn({ type: 'date', id: 'Start' });
 		dataTable.addColumn({ type: 'date', id: 'End' });
-		// dataTable.addColumn({ type: 'string', role: 'tooltip' });
-		// dataTable.addRows([
-		// 	[ 'pres', 'Washington', new Date(1700, 3, 30), new Date(2017, 2, 4) ],
-		// 	[ 'pres', 'asdfasdfsadf', new Date(1789, 3, 30), new Date(1789, 3, 30) ],
-		// 	[ 'pres', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		// 	[ 'Jeffsdferson',  'Washington', new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
-		// 	[ 'bob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		// 	[ 'boab', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		// 	[ 'dbob', 'Washbington', new Date(1655, 3, 30), new Date(1845, 2, 4) ],
-		// 	[ 'boasdb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		// 	[ 'bosdfb', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		// 	[ 'basdfob', 'Washbington', new Date(1815, 3, 30), new Date(1845, 2, 4) ],
-		// ]);
+		
 		dataTable.addRows(data_arr);
 
 		var options = {
@@ -81,24 +76,19 @@
 	</script>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body>
+<body onload="onLoad();">
+	<div class="dropdown">
+		<button onclick="dropDownFunc()" class="dropbtn">Dropdown</button>
+		<div id="myDropdown" class="dropdown-content">
+			<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+			<div id = "appendHere"></div>
+		</div>
+	</div>
 	<div id="timelineWrapper">
 		<div id="timeline"></div>
 	</div>
 	<div id= "notTimeline" style="height: 800px;">
-		<div class="dropdown">
-			<button onclick="dropDownFunc()" class="dropbtn">Dropdown</button>
-		  <div id="myDropdown" class="dropdown-content">
-		    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
-		    <a href="/about">About</a>
-		    <a href="/base">Base</a>
-		    <a href="/blog">Blog</a>
-		    <a href="/contact">Contact</a>
-		    <a href="/custom">Custom</a>
-		    <a href="/support">Support</a>
-		    <a href="/tools">Tools</a>
-		  </div>
-		</div>
+
 
 	</div>
  {% block body %}{% endblock %}

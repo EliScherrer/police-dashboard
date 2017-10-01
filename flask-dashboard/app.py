@@ -5,15 +5,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-	#data = getTimelineData("ME")
-	data = testFunc()
-	#use a default org?
-	return render_template('index.html')
+	data = getTimelineData("PF")
+	return render_template('index.html', data=data)
 
 @app.route("/<org>")
 def main(org):
 	data = getTimelineData(org)
-	#get result and pass with render
 	return render_template('index.html', data=data)
 
 if __name__ == "__main__":
